@@ -1,0 +1,7 @@
+mvn install:install-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 -Dfile=fastjson-1.1.37.jar -Dpackaging=jar
+
+（PS:DgroupId: 随意修改 ,DartifactId：jar包名称 ,Dversion:jar包版本 , Dfile：jar包所在位置 ）
+
+https://mvnrepository.com/
+
+
