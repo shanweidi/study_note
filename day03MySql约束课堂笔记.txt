@@ -1,0 +1,120 @@
+﻿sql
+	DDL
+		show databases;
+		use 数据库名;
+		select database();
+		show create database db1;
+		
+		create database db1;
+		alter database db1 character set utf8;
+		drop database db1;
+		
+		
+		
+	DML
+	DQL
+	DCL
+	
+=====================
+***DQL：
+	select .. from ... where .. group by .. having ... order by .. limit ..
+
+	排序：order by
+		order by 列名1 ASC/DESC,列名2 ASC/DESC,...
+
+	聚合函数
+		count(*)/count(列名) : 
+			* 的计数条件是整行记录，只要这一行记录存在，就会计1
+			列名 的计数会自动剔出NULL的记录，如果该列对应的值为NULL,就计数为0
+			
+		max(列名)
+		min(列名)
+		avg(列名)
+		
+		sum(列名) 
+			sum(列名1)+sum(列名2)  纵向加，会自动剔除NULL的影响
+			sum(列名1+列名2)       横向加，需要手动使用IFNULL函数剔除NULL的影响
+
+	分组
+		group by 列名1,列名2,...   -- 结合聚合函数一起使用
+
+	二次过滤
+		having 条件   -- 对分组之后的数据进行再次（二次过滤）
+		
+		**注意:
+			having和where的区别：
+				where是在分组之前实现过滤
+				having是在分组之后实现过滤，能用where的地方也可以使用having，但是效率没有where高
+				
+	分页
+		limit begin,pageSize;
+		limit pageSize; === limit 0,pageSize;
+		
+			**begin = (currenPage - 1) * pageSize;
+			
+			
+	**需求：
+		-- 查询不同地区，不同性别学生的数学平均分和人数，列出平均分最高的一条
+		SELECT address,sex,COUNT(*),AVG(math) FROM student GROUP BY address,sex ORDER BY AVG(math) DESC LIMIT 1;
+
+
+约束：对表中某一列的数据进行规则限定，从而保证数据正确性，有效性和完整性
+
+	**建表时添加约束：
+		create table xx(
+			列名 数据类型 [约束],
+			...
+		
+		);
+
+	主键约束：唯一且非空 primary key
+		修改表添加：alter table 表名 modify 列名 数据类型 primary key
+		删除：ALTER TABLE 表名 DROP primary key;
+		
+		**注意：一张表只能有一个主键，主键可以由多个字段共同组成，多个字段共同组成的主键 -- 联合主键
+		
+		** 如果主键是int类型的，那么一般会结合自增长一起使用，这样后期就不需要维护这个字段
+		
+		
+		-- 一张表只能有一个主键，可以有多个非空且唯一的字段
+		CREATE TABLE t1(
+			id INT PRIMARY KEY AUTO_INCREMENT,
+			NAME VARCHAR(20) NOT NULL UNIQUE,
+			phone VARCHAR(11) NOT NULL UNIQUE
+		);
+		
+		-- 一张表只能有一个主键，但是主键可以由多个字段共同组成
+		CREATE TABLE t2(
+			id INT ,
+			NAME VARCHAR(20) ,
+			phone VARCHAR(11) NOT NULL UNIQUE,
+			PRIMARY KEY(id,NAME)
+		);
+	
+	非空约束：not null
+		修改表添加非空约束：alter table 表名 modify 列名 数据类型 not null;
+		删除非空约束：alter table 表名 modify 列名 数据类型;
+		
+	唯一约束：unique
+		修改表添加：ALTER TABLE 表名 MODIFY 列名 数据类型 UNIQUE;
+		删除：ALTER TABLE 表名 DROP INDEX 列名;
+		
+	
+	外键约束：foreign key 描述多表间的关系，从而保证多表间数据的完整性
+	
+		物理外键：通过foreign key创建真正的关系（亲爹）
+		**逻辑外键：不通过foreign key的语法创建真正的外键关系，在程中维护这种关系（干爹）
+
+多表间的关系：
+	一对一
+		唯一外键
+		主键对应
+	
+	**一对多
+		在多方表创建外键关联一方表的主键
+	
+	**多对多	
+		创建三方表，里面最少有两个字段，分别关联两张多方表的主键
+
+范式：略
+备份和还原：略
