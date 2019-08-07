@@ -1,0 +1,168 @@
+junit测试
+	**junit测试编写步骤：
+		① 定义包、类
+			包、类随便定义
+				建议:
+					包：xx.xx.xx.test
+					类：xxTest
+					
+		② 定义方法	
+			建议：
+				方法名：testAdd
+			必须：
+				方法的权限修饰符必须是public
+				方法的返回值必须是void
+				方法的参数必须是空参
+		
+		③ 添加@Test注解
+			public class CalculatorTest{
+				@Test
+				public void testAdd(){
+					
+				}
+			}
+			
+		④ 结果判定：
+			断言典型的黑盒测试
+			会以日志输出的方式跟踪业务方法内部的流程走向--白盒测试
+
+反射：以对象的形式操作原本类中的所有内容（成员变量、成员方法、构造）
+
+	作用：
+		① 打破原本访问的局限性（暴力反射）
+		② 解耦和，让程序更便于维护和扩展
+	
+	Class:磁盘中的.class文件在jvm内存中的对象表示形式
+	Filed：磁盘中的.class文件中的成员变量在jvm内存中的对象表示形式
+	Method：磁盘中的.class文件中的成员方法在jvm内存中的对象表示形式
+	Constructor：磁盘中的.class文件中的构造方法在jvm内存中的对象表示形式
+	
+	Class对象：
+		获取：
+			Class.forName("全路径类名（包名+类名）");
+				**配置文件反射生成对象
+				
+			类名.class;
+				**方法参数传递
+					public void method(Class<Person> cls){
+					
+					}
+					
+					method(Person.class);
+					
+			实例对象.getClass();
+				**动态代理时
+					
+		
+		功能：
+			//只能获取public修饰的
+			Filed[] getFileds();
+			Filed getFiled(String name);
+			//可以获取任意修饰符修饰的
+			Filed[] getDeclaredFileds();
+			Filed getDeclaredFiled(String name);
+			
+			Method[] getMethods();
+			Method getMethod(String name,Class... cls);
+			Method[] getDeclaredMethods();
+			Method getDeclaredMethod(String name,Class... cls);
+			
+			Constructor[] getConstructors();
+			Constructor getConstructor(Class... cls);
+			Constructor[] getDeclaredConstructors();
+			Constructor getDeclaredConstructor(Class... cls);
+			
+			getName(); -- 获取全路径类名（包名+类名）
+			getSimpleName(); -- 获取类名
+			
+	Filed
+		获取：略
+		功能：	
+			set(实例对象,设置的值);
+			get(实例对象);
+			
+			**注意：如果是非public修饰的变量，在set/get之前，一定要放开访问权限（暴力反射）
+				setAccessible(true)
+		
+	Constructor:
+		获取：略
+		功能：
+			newInstance(Object... objs)
+			
+			**注意：如果是非public修饰，在操作之前，一定要放开访问权限（暴力反射）
+				setAccessible(true)
+				
+	Method：
+		获取：略
+		功能：
+			Object invoke(实例对象,Object... objs);
+			
+***反射案例：	
+	耦合代码：需求变了，代码也需要变 -- 耦合很高
+		//写一段代码， 可以执行任何类的任何方法
+		//执行student的sleep方法
+		//执行person的eat方法
+		
+		public void main(String[] args){
+			//Student s = new Student();
+			//s.sleep();
+			
+			Person p = new Person();
+			p.eat();
+		}
+	
+	降低耦合：利用中间的配置文件，将直接联系降低，达到解耦和的目的
+		配置文件： xx.properties
+			className=com.itheima.Person
+			methodName=eat
+			
+		public void main(String[] args){
+			Properties pro = new Properties();
+			pro.load(new FileInputStream("src/xx.properties"));
+			
+			String className = pro.getProperty("className");
+			String methodName = pro.getProperty("methodName");
+			
+			Class cls = Class.forName(className);
+			Method method = cls.getMethod(methodName);
+			method.invoke(cls.newInstance());
+		}
+
+注解：给jvm虚拟机或者编译器看的标识
+	注释：给程序员看的
+	
+	作用：
+		编译检查 --- 规范代码编写
+		代码分析
+		
+	*** 注解自定义
+	
+		**@Retention(RetentionPolicy.RUNTIME)
+		**@Target({ElementType.TYPE,ElementType.FIELD,ElementType.METHOD})
+		public @interface 注解名{
+			数据类型 属性名();
+			....
+		}
+		
+		**数据类型:
+			基本数据类型
+			String
+			enum
+			@
+			Class
+			[]
+			
+	
+	*** 注解使用
+		没有属性的注解：
+			@注解名
+		有属性的注解
+			@注解名(属性名=属性值,...)
+			
+			**注意：如果所有属性中只有一个名为value的属性需要赋值，value=可以省略的
+	
+	*** 注解解析
+		Class  getAnnotation
+		Method getAnnotation
+		Filed getAnnotation
+		
